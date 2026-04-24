@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     google_api_key: str | None = None
     kilo_gateway_url: str | None = None
     kilo_api_key: str | None = None
-    kilo_model: str = "gpt-4o"
+    kilo_model: str = "anthropic/claude-sonnet-4.6"
     aws_access_key_id: str | None = None
     aws_secret_access_key: str | None = None
     aws_region: str = "us-east-1"
