@@ -28,13 +28,20 @@ def health():
 
 @app.get("/api/providers")
 def list_providers():
+    settings = get_settings()
     providers = []
+    if settings.anthropic_api_key:
+        providers.append({"id": "anthropic", "name": "Claude Sonnet (recommended for diagrams)"})
     if settings.openai_api_key:
         providers.append({"id": "openai", "name": "OpenAI GPT-4o"})
-    if settings.anthropic_api_key:
-        providers.append({"id": "anthropic", "name": "Anthropic Claude"})
     if settings.google_api_key:
         providers.append({"id": "gemini", "name": "Google Gemini"})
+    if settings.kilo_gateway_url:
+        providers.append({"id": "kilo", "name": "Kilo Gateway"})
+    if settings.aws_access_key_id:
+        providers.append({"id": "bedrock", "name": "AWS Bedrock"})
+    if settings.openrouter_api_key:
+        providers.append({"id": "openrouter", "name": "OpenRouter"})
     if not providers:
-        providers.append({"id": "openai", "name": "OpenAI GPT-4o (configure API key)"})
+        providers.append({"id": "anthropic", "name": "Claude Sonnet (configure API key)"})
     return {"providers": providers}
