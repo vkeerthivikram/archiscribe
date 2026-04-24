@@ -10,7 +10,7 @@ class OpenRouterProvider(BaseAIProvider):
             api_key=settings.openrouter_api_key or "dummy",
             base_url="https://openrouter.ai/api/v1",
         )
-        self.model = settings.openrouter_model or "openai/gpt-4o"
+        self.model = settings.openrouter_model
 
     async def analyze_image(self, image: bytes, prompt: str) -> dict:
         import base64, json

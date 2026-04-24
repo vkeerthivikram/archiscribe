@@ -4,8 +4,9 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     openai_api_key: str | None = None
+    openai_model: str = "gpt-4o"
     anthropic_api_key: str | None = None
-    anthropic_model: str = "claude-3-5-sonnet-20241022"
+    anthropic_model: str = "claude-sonnet-4-6"
     google_api_key: str | None = None
     kilo_gateway_url: str | None = None
     kilo_api_key: str | None = None
@@ -13,9 +14,9 @@ class Settings(BaseSettings):
     aws_access_key_id: str | None = None
     aws_secret_access_key: str | None = None
     aws_region: str = "us-east-1"
-    bedrock_model: str = "anthropic.claude-3-5-sonnet-20241022-20241022"
+    bedrock_model: str = "anthropic.claude-sonnet-4-6"
     openrouter_api_key: str | None = None
-    openrouter_model: str = "openai/gpt-4o"
+    openrouter_model: str = "anthropic/claude-sonnet-4-6"
     max_upload_size_mb: int = 50
     allowed_extensions: set[str] = {
         "png", "jpg", "jpeg", "svg", "webp", "pdf",

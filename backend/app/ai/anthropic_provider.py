@@ -7,7 +7,7 @@ class AnthropicProvider(BaseAIProvider):
     def __init__(self):
         settings = get_settings()
         self.client = AsyncAnthropic(api_key=settings.anthropic_api_key or "dummy")
-        self.model = settings.anthropic_model or "claude-3-5-sonnet-20241022"
+        self.model = settings.anthropic_model
 
     async def analyze_image(self, image: bytes, prompt: str) -> dict:
         import base64, json
