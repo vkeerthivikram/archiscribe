@@ -2,10 +2,15 @@ __pycache__/
 *.py[cod]
 .env
 .venv/
+venv/
 *.egg-info/
 dist/
 build/
 node_modules/
 .superpowers/
+.svelte-kit/
+.ruff_cache/
+.pytest_cache/
 .DS_Store
 *.log
+frontend/package-lock.json
