@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = None
     anthropic_model: str = "claude-sonnet-4-6"
     google_api_key: str | None = None
+    google_model: str = "gemini-3.1-pro-preview"
     kilo_gateway_url: str | None = None
     kilo_api_key: str | None = None
     kilo_model: str = "anthropic/claude-sonnet-4.6"
