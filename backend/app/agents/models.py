@@ -1,3 +1,6 @@
+from typing import Union
+
+from strands.models import Model
 from strands.models.openai import OpenAIModel
 from strands.models.anthropic import AnthropicModel
 from strands.models.gemini import GeminiModel
@@ -5,7 +8,7 @@ from strands.models.bedrock import BedrockModel
 
 from app.config import get_settings
 
-PROVIDER_MAP = {
+PROVIDER_MAP: dict[str, type[Model]] = {
     "openai": OpenAIModel,
     "anthropic": AnthropicModel,
     "gemini": GeminiModel,
@@ -14,45 +17,62 @@ PROVIDER_MAP = {
     "kilo": OpenAIModel,
 }
 
-def create_model(provider_id: str):
-    settings = get_settings()
 
-    if provider_id == "openai":
+def create_model(provider_id: str | None = None) -> Model:
+    settings = get_settings()
+    pid = provider_id or settings.default_provider or "anthropic"
+
+    if pid == "openrouter":
         return OpenAIModel(
-            model=settings.openai_model,
-            api_key=settings.openai_api_key,
+            model_id=settings.openrouter_model,
+            client_args={
+                "api_key": settings.openrouter_api_key,
+                "base_url": "https://openrouter.ai/api/v1",
+            },
         )
-    elif provider_id == "anthropic":
-        return AnthropicModel(
-            model=settings.anthropic_model,
-            api_key=settings.anthropic_api_key,
-        )
-    elif provider_id == "gemini":
-        return GeminiModel(
-            model=settings.google_model,
-            api_key=settings.google_api_key,
-        )
-    elif provider_id == "bedrock":
-        return BedrockModel(
-            model=settings.bedrock_model,
-            aws_access_key_id=settings.aws_access_key_id,
-            aws_secret_access_key=settings.aws_secret_access_key,
-            aws_region=settings.aws_region,
-        )
-    elif provider_id == "openrouter":
+    elif pid == "kilo":
         return OpenAIModel(
-            model=settings.openrouter_model,
-            api_key=settings.openrouter_api_key,
-            base_url="https://openrouter.ai/api/v1",
+            model_id=settings.kilo_model,
+            client_args={
+                "api_key": settings.kilo_api_key,
+                "base_url": settings.kilo_gateway_url or "http://localhost:8000",
+            },
         )
-    elif provider_id == "kilo":
-        return OpenAIModel(
-            model=settings.kilo_model,
-            api_key=settings.kilo_api_key,
-            base_url=settings.kilo_gateway_url,
-        )
+    elif pid in PROVIDER_MAP:
+        model_cls = PROVIDER_MAP[pid]
+        return _create_standard_model(pid, model_cls, settings)
     else:
         return AnthropicModel(
-            model=settings.anthropic_model,
-            api_key=settings.anthropic_api_key,
+            model_id=settings.anthropic_model,
+            client_args={"api_key": settings.anthropic_api_key},
+        )
+
+
+def _create_standard_model(
+    pid: str, model_cls: type[Model], settings
+) -> Model:
+    if pid == "bedrock":
+        return BedrockModel(
+            model_id=settings.bedrock_model,
+            region_name=settings.aws_region,
+        )
+    elif pid == "openai":
+        return model_cls(
+            model_id=settings.openai_model,
+            client_args={"api_key": settings.openai_api_key},
+        )
+    elif pid == "anthropic":
+        return model_cls(
+            model_id=settings.anthropic_model,
+            client_args={"api_key": settings.anthropic_api_key},
+        )
+    elif pid == "gemini":
+        return model_cls(
+            model_id=settings.google_model,
+            client_args={"api_key": settings.google_api_key},
+        )
+    else:
+        return model_cls(
+            model_id=settings.anthropic_model,
+            client_args={"api_key": settings.anthropic_api_key},
         )
