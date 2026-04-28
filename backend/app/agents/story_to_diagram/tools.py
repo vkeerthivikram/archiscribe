@@ -1,5 +1,4 @@
 import json
-import uuid
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
@@ -277,7 +276,7 @@ def _mermaid_to_drawio(mermaid_code: str, components: list[dict], flows: list[di
         x = x_offset + (i % 4) * 200
         y = y_offset + (i // 4) * 120
         
-        component_positions[name] = (x, y)
+        component_positions[name] = comp_id
         
         if comp_type == "database":
             shape = "shape=cylinder3;whiteSpace=wrap;html=1;boundedL=1;h=40;flipH=0;size=20"
@@ -305,9 +304,10 @@ def _mermaid_to_drawio(mermaid_code: str, components: list[dict], flows: list[di
         source_pos = component_positions.get(source)
         target_pos = component_positions.get(target)
         
-        if source_pos and target_pos:
-            edge = f"        <mxCell id=\"{flow_id}\" value=\"{label}\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0\" edge=\"1\" parent=\"1\" source=\"{comp_id}\" target=\"{comp_id}\">\n          <mxGeometry relative=\"1\" as=\"geometry\"/>\n        </mxCell>"
-            cells.append(edge)
+        source_id = component_positions.get(source, "comp_0")
+        target_id = component_positions.get(target, "comp_0")
+        edge = f"        <mxCell id=\"{flow_id}\" value=\"{label}\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0\" edge=\"1\" parent=\"1\" source=\"{source_id}\" target=\"{target_id}\">\n          <mxGeometry relative=\"1\" as=\"geometry\"/>\n        </mxCell>"
+        cells.append(edge)
     
     cells_str = "\n".join(cells)
     return DRAWIO_TEMPLATE.format(cells=cells_str)
