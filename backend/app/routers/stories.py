@@ -11,24 +11,6 @@ def get_project_ref(project_id: str):
     return _projects[project_id]
 
 
-@router.post("/{project_id}/generate-stories")
-async def generate_stories(project_id: str) -> dict:
-    project = get_project_ref(project_id)
-
-    if not project.components:
-        raise HTTPException(status_code=400, detail="No components to analyze")
-
-    from app.ai import get_provider
-    from app.generators import StoryGenerator
-
-    provider = get_provider(project.ai_provider)
-    generator = StoryGenerator(provider)
-    stories = await generator.generate(project.components, project.flows)
-
-    project.stories = stories
-    return {"stories_count": len(stories)}
-
-
 @router.get("/{project_id}/stories")
 def get_stories(project_id: str) -> dict:
     project = get_project_ref(project_id)
@@ -80,24 +62,6 @@ def delete_story(project_id: str, story_id: str) -> dict:
     original = len(project.stories)
     project.stories = [s for s in project.stories if s.id != story_id]
     return {"deleted": len(project.stories) < original}
-
-
-@router.post("/{project_id}/stories/{story_id}/regenerate")
-async def regenerate_story(project_id: str, story_id: str) -> dict:
-    project = get_project_ref(project_id)
-    for i, story in enumerate(project.stories):
-        if story.id == story_id:
-            from app.ai import get_provider
-            from app.generators import StoryGenerator
-            provider = get_provider(project.ai_provider)
-            generator = StoryGenerator(provider)
-            comps = [c for c in project.components if c.id in story.technical_notes.source_components]
-            flows = [f for f in project.flows if f.id in story.technical_notes.source_flows]
-            new_stories = await generator.generate(comps, flows)
-            if new_stories:
-                project.stories[i] = new_stories[0]
-            return {"regenerated": True}
-    raise HTTPException(status_code=404, detail="Story not found")
 
 
 @router.post("/{project_id}/stories")

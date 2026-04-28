@@ -1,3 +1,4 @@
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
@@ -25,9 +26,7 @@ class Settings(BaseSettings):
         "drawio", "xml", "excalidraw", "vsdx"
     }
 
-    class Config:
-        env_prefix = "ARCHISCRIBE_"
-        extra = "ignore"
+    model_config = ConfigDict(env_prefix="ARCHISCRIBE_", extra="ignore")
 
 
 @lru_cache
