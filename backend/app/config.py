@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     bedrock_model: str = "anthropic.claude-sonnet-4-6"
     openrouter_api_key: str | None = None
     openrouter_model: str = "anthropic/claude-sonnet-4-6"
+    default_provider: str = "anthropic"
     max_upload_size_mb: int = 50
     allowed_extensions: set[str] = {
         "png", "jpg", "jpeg", "svg", "webp", "pdf",
